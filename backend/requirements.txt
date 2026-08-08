@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+pydantic
+pydantic-settings
+psycopg2-binary
+apscheduler
+yt-dlp
+opencv-python-headless
+easyocr
+google-generativeai
+python-dotenv
+httpx
+requests
+mistralai
+grpcio
