@@ -1,3 +1,5 @@
+# .github/workflows/ai-pr-review.yml
+
 name: AI PR Review
 
 on:
@@ -23,24 +25,23 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr diff ${{ github.event.pull_request.number }} \
-            --repo ${{ github.repository }} \
-            > pr.diff
+          curl -L \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3.diff" \
+            "${{ github.event.pull_request.url }}" \
+            -o pr.diff
 
           echo "Diff lines:"
           wc -l pr.diff
 
       - name: Create Prompt
         run: |
-          cat > prompt.txt <<'EOF'
+          cat > prompt.txt << 'EOF'
           You are a senior software engineer performing a pull request review.
-
-          Review ONLY the changes contained in the PR diff below.
 
           Rules:
           - Only report issues you are highly confident about.
-          - Do not report style or formatting issues.
-          - Do not report hypothetical problems without strong evidence.
+          - Ignore formatting and style nitpicks.
           - Focus on:
             - Bugs
             - Security vulnerabilities
@@ -48,8 +49,6 @@ jobs:
             - Missing error handling
             - Missing validation
             - Missing tests
-          - Avoid duplicate findings.
-          - Be concise and actionable.
 
           Return markdown only.
 
@@ -67,27 +66,18 @@ jobs:
           Severity: High|Medium|Low
 
           Problem:
-          Explain the problem and why it matters.
+          ...
 
           Suggested Fix:
-          Explain how to fix it.
+          ...
 
           File:
-          Give the affected file and, if possible, the relevant line.
+          ...
 
-          If there are no significant issues, say:
-
-          ## Summary
-
-          No significant issues found.
-
-          ## Findings
-
-          No findings.
-
-          ===== PR DIFF =====
           EOF
 
+          echo "" >> prompt.txt
+          echo "===== PR DIFF =====" >> prompt.txt
           cat pr.diff >> prompt.txt
 
       - name: Call Mistral
@@ -107,18 +97,18 @@ jobs:
               temperature: 0.1
             }' > request.json
 
-          curl --fail-with-body -sS \
+          curl -s \
             https://api.mistral.ai/v1/chat/completions \
             -H "Authorization: Bearer $MISTRAL_API_KEY" \
             -H "Content-Type: application/json" \
             -d @request.json \
             > response.json
 
-          echo "Mistral API response received."
+          cat response.json
 
       - name: Extract Review
         run: |
-          jq -e -r '.choices[0].message.content' response.json > review.md
+          jq -r '.choices[0].message.content' response.json > review.md
 
           echo "Generated review:"
           cat review.md
