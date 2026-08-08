@@ -1,0 +1,139 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download PR Diff
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr diff ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            > pr.diff
+
+          echo "Diff lines:"
+          wc -l pr.diff
+
+      - name: Create Prompt
+        run: |
+          cat > prompt.txt <<'EOF'
+          You are a senior software engineer performing a pull request review.
+
+          Review ONLY the changes contained in the PR diff below.
+
+          Rules:
+          - Only report issues you are highly confident about.
+          - Do not report style or formatting issues.
+          - Do not report hypothetical problems without strong evidence.
+          - Focus on:
+            - Bugs
+            - Security vulnerabilities
+            - Performance issues
+            - Missing error handling
+            - Missing validation
+            - Missing tests
+          - Avoid duplicate findings.
+          - Be concise and actionable.
+
+          Return markdown only.
+
+          Structure:
+
+          ## Summary
+
+          Short overall assessment.
+
+          ## Findings
+
+          For each issue:
+
+          ### Issue
+          Severity: High|Medium|Low
+
+          Problem:
+          Explain the problem and why it matters.
+
+          Suggested Fix:
+          Explain how to fix it.
+
+          File:
+          Give the affected file and, if possible, the relevant line.
+
+          If there are no significant issues, say:
+
+          ## Summary
+
+          No significant issues found.
+
+          ## Findings
+
+          No findings.
+
+          ===== PR DIFF =====
+          EOF
+
+          cat pr.diff >> prompt.txt
+
+      - name: Call Mistral
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+        run: |
+          jq -n \
+            --rawfile prompt prompt.txt \
+            '{
+              model: "mistral-small-latest",
+              messages: [
+                {
+                  role: "user",
+                  content: $prompt
+                }
+              ],
+              temperature: 0.1
+            }' > request.json
+
+          curl --fail-with-body -sS \
+            https://api.mistral.ai/v1/chat/completions \
+            -H "Authorization: Bearer $MISTRAL_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @request.json \
+            > response.json
+
+          echo "Mistral API response received."
+
+      - name: Extract Review
+        run: |
+          jq -e -r '.choices[0].message.content' response.json > review.md
+
+          echo "Generated review:"
+          cat review.md
+
+      - name: Post Review Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const body = fs.readFileSync('review.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });
