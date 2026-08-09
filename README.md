@@ -80,6 +80,8 @@ While Docker is supported, the easiest way to develop locally is by running the 
    # Database configuration for local SQLite
    DATABASE_URL=sqlite:///./viral_reel.db
    ```
+   
+   > **Note on SQLite:** SQLite is configured by default for quick local setup. However, it does not support concurrent writes and is not suitable for production environments. For multi-developer or production scenarios, we strongly recommend using PostgreSQL.
 5. Start the backend server:
    ```bash
    uvicorn app.main:app --reload
@@ -114,7 +116,9 @@ Alternatively, you can run the entire stack using Docker Compose:
    AI_PROVIDER=MistralProvider
    
    # Database configuration for Docker Postgres
-   DATABASE_URL=postgresql://postgres:password@db:5432/viral_reel
+   # IMPORTANT: Replace 'your_secure_password' with a strong, randomly generated password.
+   # Always store credentials securely and NEVER commit .env files to version control.
+   DATABASE_URL=postgresql://postgres:your_secure_password@db:5432/viral_reel
    ```
 2. Run:
    ```bash
