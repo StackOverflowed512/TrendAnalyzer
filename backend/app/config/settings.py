@@ -1,6 +1,7 @@
 import os
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Viral Reel Intelligence"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./viral_reel.db")
@@ -17,6 +18,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+
 
 settings = Settings()
 

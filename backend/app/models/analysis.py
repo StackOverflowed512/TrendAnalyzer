@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON
 from app.database.session import Base
 
+
 class Analysis(Base):
     __tablename__ = "analysis"
 

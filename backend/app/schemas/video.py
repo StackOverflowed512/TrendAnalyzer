@@ -2,6 +2,7 @@ from pydantic import BaseModel, HttpUrl
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
+
 class VideoBase(BaseModel):
     url: HttpUrl
     platform: str
@@ -12,8 +13,10 @@ class VideoBase(BaseModel):
     likes: int = 0
     comments: int = 0
 
+
 class VideoCreate(VideoBase):
     pass
+
 
 class Video(VideoBase):
     id: int
@@ -25,6 +28,7 @@ class Video(VideoBase):
 
     class Config:
         from_attributes = True
+
 
 class TrendDiscoverResponse(BaseModel):
     trends: List[Dict[str, Any]]

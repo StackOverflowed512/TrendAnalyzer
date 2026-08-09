@@ -5,6 +5,7 @@ from app.providers.factory import get_ai_provider
 
 logger = logging.getLogger(__name__)
 
+
 class StoryboardGenerationService:
     def __init__(self):
         self.provider = get_ai_provider()
@@ -16,7 +17,7 @@ class StoryboardGenerationService:
                     "visual": "string",
                     "caption": "string",
                     "voice": "string",
-                    "transition": "string"
+                    "transition": "string",
                 }
             ]
         }
@@ -26,15 +27,17 @@ class StoryboardGenerationService:
         Generates a scene-by-scene storyboard from a generated video prompt.
         """
         logger.info(f"Generating storyboard for prompt: {prompt_data.get('title')}")
-        
+
         prompt = f"""
         Based on the following video concept and script, generate a detailed scene-by-scene storyboard.
         
         Concept:
         {json.dumps(prompt_data)}
         """
-        
-        response_json = self.provider.generate_json(prompt, schema=self.storyboard_schema)
+
+        response_json = self.provider.generate_json(
+            prompt, schema=self.storyboard_schema
+        )
         try:
             data = json.loads(response_json)
             return data.get("scenes", [])
