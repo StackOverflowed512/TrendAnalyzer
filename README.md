@@ -68,9 +68,16 @@ While Docker is supported, the easiest way to develop locally is by running the 
    ```
 4. Create a `.env` file in the `backend/` directory with your API keys. We use SQLite by default for local development:
    ```env
+   # API Keys for Trend Discovery and AI Analysis
    YOUTUBE_API_KEY=your_youtube_api_key_here
    MISTRAL_API_KEY=your_mistral_api_key_here
+   # Alternatively, if using Gemini:
+   # GEMINI_API_KEY=your_gemini_api_key_here
+   # AI_PROVIDER=GeminiProvider
+   
    AI_PROVIDER=MistralProvider
+   
+   # Database configuration for local SQLite
    DATABASE_URL=sqlite:///./viral_reel.db
    ```
 5. Start the backend server:
@@ -99,7 +106,16 @@ While Docker is supported, the easiest way to develop locally is by running the 
 
 Alternatively, you can run the entire stack using Docker Compose:
 
-1. Ensure your `backend/.env` file is created (as shown above, but with a Postgres `DATABASE_URL` if you want to use the Dockerized database).
+1. Ensure your `backend/.env` file is created and configured for Postgres:
+   ```env
+   # API Keys
+   YOUTUBE_API_KEY=your_youtube_api_key_here
+   MISTRAL_API_KEY=your_mistral_api_key_here
+   AI_PROVIDER=MistralProvider
+   
+   # Database configuration for Docker Postgres
+   DATABASE_URL=postgresql://postgres:password@db:5432/viral_reel
+   ```
 2. Run:
    ```bash
    docker-compose up --build -d
