@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, JSON
 from app.database.session import Base
 
+
 class Template(Base):
     __tablename__ = "templates"
 

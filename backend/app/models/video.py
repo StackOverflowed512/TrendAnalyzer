@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON
 from sqlalchemy.sql import func
 from app.database.session import Base
 
+
 class Video(Base):
     __tablename__ = "videos"
 

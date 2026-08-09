@@ -4,6 +4,7 @@ from app.database.session import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 
+
 class CRUDBase(Generic[ModelType]):
     def __init__(self, model: Type[ModelType]):
         """
@@ -27,11 +28,7 @@ class CRUDBase(Generic[ModelType]):
         return db_obj
 
     def update(
-        self,
-        db: Session,
-        *,
-        db_obj: ModelType,
-        obj_in: Dict[str, Any]
+        self, db: Session, *, db_obj: ModelType, obj_in: Dict[str, Any]
     ) -> ModelType:
         for field, value in obj_in.items():
             setattr(db_obj, field, value)
