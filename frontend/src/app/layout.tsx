@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-gray-900 text-white antialiased`}>
+      <body className={`${inter.className} text-white antialiased selection:bg-blue-500/30 selection:text-white bg-transparent`}>
         <div className="flex h-screen overflow-hidden">
           <Sidebar />
           <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
