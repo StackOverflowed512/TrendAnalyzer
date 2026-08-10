@@ -127,7 +127,7 @@ Alternatively, you can run the entire stack using Docker Compose:
 
 ## Configuration & Features
 
-- **AI Providers**: The AI generation is abstracted via `AIProvider`. You can easily switch between models (Mistral, Gemini, etc.) by updating the `AI_PROVIDER` environment variable and providing the respective API key.
+- **AI Providers**: The  generation is abstracted via `AIProvider`. You can easily switch between models (Mistral, Gemini, etc.) by updating the `AI_PROVIDER` environment variable and providing the respective API key.
 - **Database**: The application automatically creates all necessary database tables on startup. Local development uses SQLite by default to prevent complex PostgreSQL credential issues.
 - **Hardware**: By default, `EasyOCR` is configured to run on the CPU to support machines without a GPU.
 - **Subtitles**: Extracted via `yt-dlp` where possible to save transcription overhead.
