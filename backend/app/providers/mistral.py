@@ -1,23 +1,31 @@
 import logging
 from typing import Dict, Any
 import json
-from mistralai import Mistral
+import requests
 from app.config.settings import settings
 from app.providers.base import AIProvider
 
 logger = logging.getLogger(__name__)
 
-
 class MistralProvider(AIProvider):
     def __init__(self):
-        self.client = Mistral(api_key=settings.MISTRAL_API_KEY)
+        self.api_key = settings.MISTRAL_API_KEY
         self.model = "mistral-small-latest"
+        self.api_url = "https://api.mistral.ai/v1/chat/completions"
+        self.headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
     def analyze(self, prompt: str) -> str:
-        response = self.client.chat.complete(
-            model=self.model, messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        response = requests.post(self.api_url, headers=self.headers, json=payload)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
 
     def summarize(self, text: str) -> str:
         prompt = f"Summarize the following text:\n\n{text}"
@@ -35,9 +43,11 @@ class MistralProvider(AIProvider):
         if schema:
             prompt += f"\n\nReturn ONLY valid JSON matching this schema:\n{json.dumps(schema, indent=2)}"
 
-        response = self.client.chat.complete(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-        )
-        return response.choices[0].message.content
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": {"type": "json_object"}
+        }
+        response = requests.post(self.api_url, headers=self.headers, json=payload)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
