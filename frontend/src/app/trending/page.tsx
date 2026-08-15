@@ -15,7 +15,8 @@ export default function TrendingPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://localhost:8000/api/discover', { method: 'POST' });
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${baseUrl}/api/discover`, { method: 'POST' });
       if (!res.ok) throw new Error('Failed to discover trends');
       const data = await res.json();
       setTrends(data.trends || []);
@@ -30,7 +31,8 @@ export default function TrendingPage() {
     setSavingId(trend.id);
     setError('');
     try {
-      const res = await fetch('http://localhost:8000/api/videos/save-trend', {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${baseUrl}/api/videos/save-trend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

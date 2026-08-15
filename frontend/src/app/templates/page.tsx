@@ -10,7 +10,8 @@ export default function TemplatesPage() {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/templates');
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${baseUrl}/api/templates`);
         if (res.ok) {
           const data = await res.json();
           setTemplates(data);

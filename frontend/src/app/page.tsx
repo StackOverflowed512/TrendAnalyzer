@@ -11,9 +11,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
         const [analyticsRes, videosRes] = await Promise.all([
-          fetch('http://localhost:8000/api/analytics'),
-          fetch('http://localhost:8000/api/videos/top')
+          fetch(`${baseUrl}/api/analytics`),
+          fetch(`${baseUrl}/api/videos/top`)
         ]);
         
         if (analyticsRes.ok) {

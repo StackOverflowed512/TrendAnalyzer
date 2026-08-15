@@ -27,7 +27,8 @@ function PromptGeneratorContent() {
     setPrompt(null);
     
     try {
-      const res = await fetch(`http://localhost:8000/api/generate-prompt/${videoId}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${baseUrl}/api/generate-prompt/${videoId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic: "trending" })

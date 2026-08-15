@@ -10,7 +10,8 @@ export default function AnalyticsPage() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/analytics');
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${baseUrl}/api/analytics`);
         if (res.ok) {
           const data = await res.json();
           setAnalytics(data);

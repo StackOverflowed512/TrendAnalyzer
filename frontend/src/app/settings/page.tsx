@@ -24,7 +24,7 @@ export default function SettingsPage() {
               <input 
                 type="text" 
                 disabled 
-                value="http://localhost:8000"
+                value={process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}
                 className="w-full bg-white/5 border border-white/10 text-gray-400 px-4 py-3 rounded-xl cursor-not-allowed shadow-inner focus:outline-none"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center space-x-2">
