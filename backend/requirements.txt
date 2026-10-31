@@ -13,5 +13,5 @@ google-generativeai
 python-dotenv
 httpx
 requests
-mistralai>=1.0.0
+mistralai>=3.5.0
 grpcio
